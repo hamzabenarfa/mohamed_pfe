@@ -80,6 +80,11 @@ export class AuthService {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
+    if (!userExist.active) {
+      throw new HttpException('User is not activated', HttpStatus.BAD_REQUEST);
+    }
+
+
     const passwordMatch = await argon2.verify(
       userExist.password,
       loginData.password,
