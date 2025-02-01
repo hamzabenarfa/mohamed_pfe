@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Role } from '../enums/role.enum';
+import { Role } from '@prisma/client';
 import { Tokens } from './types';
 
 @Injectable()

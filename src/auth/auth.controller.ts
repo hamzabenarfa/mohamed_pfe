@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
 import { Public } from 'src/common/decorators';
+import { SendOtpDto, VerifyOtpDto } from './dto/otp.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -25,16 +26,15 @@ export class AuthController {
   @Public()
   @Post('otp-send')
   @HttpCode(HttpStatus.OK)
-  async otpSend(@Body() data) {
-    await this.authService.otpSend(data);
-    return { message: 'OTP sent successfully' };
+  async otpSend(@Body() dto: SendOtpDto) {
+    return await this.authService.otpSend(dto);
   }
 
   @Public()
   @Post('otp-verify')
   @HttpCode(HttpStatus.OK)
-  async otpVerify(@Body() { email, code }: { email: string; code: string }) {
-    const isValid = this.authService.otpVerify(email, code);
-    return { message: isValid ? 'OTP verified successfully' : 'Invalid OTP' };
+  async otpVerify(@Body() { email, code }: VerifyOtpDto) {
+    return await this.authService.otpVerify(email, code);
+
   }
 }

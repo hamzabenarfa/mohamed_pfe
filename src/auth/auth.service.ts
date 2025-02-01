@@ -16,12 +16,16 @@ export class AuthService {
     private readonly tokenService: TokenService,
   ) {}
 
-  async otpSend(data): Promise<boolean> {
+  async otpSend(data) {
     const user = await this.prisma.user.findUnique({
       where: { email: data.email },
     });
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (user.active) {
+      throw new HttpException('User is already active', HttpStatus.BAD_REQUEST);
     }
 
     const otp = authenticator.generate(process.env.OTP_SECRET);
@@ -37,14 +41,17 @@ export class AuthService {
       subject: 'Your OTP Code',
       text: `Your OTP is: ${otp}. It will expire in 5 minutes.`,
     });
-
-    return true;
   }
 
-  async otpVerify(email: string, code: string): Promise<boolean> {
+  async otpVerify(email: string, code: string) {
     const user = await this.prisma.user.findUnique({
       where: { email },
     });
+
+    if (user.active) {
+      throw new HttpException('User is already active', HttpStatus.BAD_REQUEST);
+    }
+
     if (!user || !user.otp || !user.otpExpiry) {
       throw new HttpException(
         'Invalid or expired OTP',
@@ -52,7 +59,6 @@ export class AuthService {
       );
     }
 
-    // Check OTP and expiry time
     if (user.otp !== code || user.otpExpiry < new Date()) {
       throw new HttpException(
         'Invalid or expired OTP',
@@ -60,13 +66,10 @@ export class AuthService {
       );
     }
 
-    // Activate account and clear OTP fields
     await this.prisma.user.update({
       where: { id: user.id },
       data: { active: true, otp: null, otpExpiry: null },
     });
-
-    return true;
   }
 
   async login(loginData: LoginDto): Promise<Tokens> {
