@@ -5,7 +5,6 @@ import {
   MinLength,
 } from '@nestjs/class-validator';
 
-
 export class LoginDto {
   @IsEmail()
   @IsString()

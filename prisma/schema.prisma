@@ -10,13 +10,14 @@ datasource db {
 enum Role {
   CONDUCTEUR
   RESPONSABLE
+  CLIENT
 }
 
 model User {
   id       Int    @id @default(autoincrement())
   email    String @unique
   password String
-  role     Role   @default(RESPONSABLE)
+  role     Role   @default(CONDUCTEUR)
   otp      String?
   otpExpiry DateTime?
   active   Boolean @default(false)

@@ -84,7 +84,6 @@ export class AuthService {
       throw new HttpException('User is not activated', HttpStatus.BAD_REQUEST);
     }
 
-
     const passwordMatch = await argon2.verify(
       userExist.password,
       loginData.password,
@@ -102,7 +101,7 @@ export class AuthService {
     return tokens;
   }
 
-  async signup(signupData: SignupDto): Promise<Tokens> {
+  async signup(signupData: SignupDto) {
     const userExist = await this.prisma.user.findUnique({
       where: { email: signupData.email },
     });
@@ -117,19 +116,13 @@ export class AuthService {
         password: hashedPassword,
       },
     });
-
-    const tokens = await this.tokenService.generateTokens(
-      newUser.id.toString(),
-      newUser.email,
-      newUser.role,
-    );
-
+    
     await this.mailerService.sendMail({
       to: newUser.email,
       subject: 'Account Created',
       text: 'Your account has been created successfully',
     });
 
-    return tokens;
+    return { message: 'User created successfully' };
   }
 }

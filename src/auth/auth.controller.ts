@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
@@ -9,13 +9,13 @@ import { SendOtpDto, VerifyOtpDto } from './dto/otp.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Public()
-  @Post('signup')
-  @HttpCode(HttpStatus.CREATED)
-  async signup(@Body() dto: SignupDto) {
-    return await this.authService.signup(dto);
-  }
-  
+  // @Public()
+  // @Post('signup')
+  // @HttpCode(HttpStatus.CREATED)
+  // async signup(@Body() dto: SignupDto) {
+  //   return await this.authService.signup(dto);
+  // }
+
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -35,6 +35,5 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async otpVerify(@Body() { email, code }: VerifyOtpDto) {
     return await this.authService.otpVerify(email, code);
-
   }
 }
